@@ -1,8 +1,4 @@
-"""
-Diabetes Prediction - Gradio App
-Deployable on Hugging Face Spaces (or any host that runs Python + Gradio).
-Trains the model on startup using diabetes.csv (must be in the same folder).
-"""
+
 
 import os
 import pandas as pd
@@ -11,9 +7,6 @@ from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.impute import SimpleImputer
 import gradio as gr
 
-# ---------------------------------------------------------------
-# Load & prepare data
-# ---------------------------------------------------------------
 df = pd.read_csv("diabetes.csv")
 df = df.dropna(subset=["glyhb"]).copy()
 df["Diabetes"] = (df["glyhb"] >= 6.5).astype(int)
@@ -40,9 +33,6 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42, stratify=y
 )
 
-# ---------------------------------------------------------------
-# Train model
-# ---------------------------------------------------------------
 model = GradientBoostingClassifier(
     n_estimators=200, learning_rate=0.05, max_depth=3, random_state=42
 )
@@ -50,9 +40,7 @@ model.fit(X_train, y_train)
 
 medians = X_train.median()
 
-# ---------------------------------------------------------------
-# Prediction function
-# ---------------------------------------------------------------
+
 def predict_diabetes(glucose, blood_pressure, bmi, age):
     new_patient = pd.DataFrame([{
         "Glucose": glucose,
@@ -69,9 +57,7 @@ def predict_diabetes(glucose, blood_pressure, bmi, age):
     result = "Diabetes" if pred == 1 else "No Diabetes"
     return f"Prediction: {result}  (probability: {proba:.1%})"
 
-# ---------------------------------------------------------------
-# Gradio interface
-# ---------------------------------------------------------------
+
 demo = gr.Interface(
     fn=predict_diabetes,
     inputs=[
